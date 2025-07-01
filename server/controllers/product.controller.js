@@ -27,8 +27,8 @@ const createProduct = asyncHandler(async(req,res)=>{
     if(!coverImagePath){
         throw new ApiError(400,"cover image is required")
     }
-    const image = await uploadOnCloudinary(coverImagePath)
-    if(!image?.secure_url){
+    const images = await uploadOnCloudinary(coverImagePath)
+    if(!images?.secure_url){
         throw new ApiError(500,"cover image is required")
     }
     const product = await Product.create(
