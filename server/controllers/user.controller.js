@@ -73,8 +73,12 @@ const loginUser = asyncHandler(async(req,res)=>{
     if(!isPasswordValid){
         throw new ApiError(401,"invalid credentials")
     }
-    const{accessToken,refreshToken} = await generateAccessTokenandRefreshToken(loggedInUser._id)
-    const loggedIn = await User.findById(user._id).select("-password -refreshToken")
+    const{accessToken,refreshToken} = await generateAccessTokenandRefreshToken(loggedInUser._id);
+    if(!accessToken || !refreshToken){
+        throw new ApiError(500,"Failed to generate tokens");
+    }
+    console.log("Generated access token:", accessToken );
+    const loggedIn = await User.findById(loggedInUser._id).select("-password -refreshToken")
 
      const options ={
         httpOnly:true,
@@ -96,9 +100,36 @@ const loginUser = asyncHandler(async(req,res)=>{
    
 
    })
+   const logoutUser = asyncHandler(async(req,res)=>{
+    await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $unset:{
+                refreshToken:1
+            }
+
+        },
+        {
+            new :true
+        }
+    )
+    const options ={
+        httpOnly:true,
+        secure:true
+    }
+
+    return res
+    .status(200)
+    .clearCookie("accessToken",options)
+    .clearCookie("refreshToken",options)
+    .json(
+        new ApiResponse(200 ,{}, "User logged out successfully")
+    )
+    
+   })
    const changeOldPassword = asyncHandler(async(req,res)=>{
     const{oldPassword,newPassword} = req.body
-    const user = await User.findById(user?._id)
+    const user = await User.findById(req.user._id)
 
     const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
 
@@ -131,6 +162,7 @@ const getCurrentUser = asyncHandler(async(req,res)=>{
 export {
     registerUser,
     loginUser,
+    logoutUser,
     changeOldPassword,
     getCurrentUser
 }

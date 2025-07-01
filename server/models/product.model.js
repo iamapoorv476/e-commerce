@@ -1,5 +1,5 @@
 import mongoose,{Schema} from "mongoose";
-
+import jwt from "jsonwebtoken";
 const productSchema = new Schema(
     {
         product_id :{

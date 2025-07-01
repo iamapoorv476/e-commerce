@@ -5,7 +5,7 @@ import cors from "cors";
 // ✅ Correct (add `server/`)
 // ✅ Correct
 import userRoutes from "./routes/user.routes.js";
-
+import productRoutes from "./routes/product.routes.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -17,8 +17,11 @@ app.use(cors({
 })
 )
 app.use(express.json()); // to parse JSON body
+app.use(express.urlencoded({ extended: true }));
+
 app.use(cookieParser());
 app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/products",productRoutes);
 // app.use("/api/v1/products", productRoutes); // optional
 
 // Handle 404

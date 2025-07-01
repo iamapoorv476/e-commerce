@@ -1,12 +1,12 @@
-import { Product } from "../models/product.model";
-import { ApiError } from "../utils/ApiError";
-import { ApiResponse } from "../utils/ApiResponse";
-import { asyncHandler } from "../utils/asyncHandler";
+import { Product } from "../models/product.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 import mongoose from "mongoose";
-import { uploadOnCloudinary } from "../utils/cloudinary";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const createProduct = asyncHandler(async(req,res)=>{
-    const {product_id,title,description,price,category,images} = req.body
+    const {product_id,title,description,price,category,} = req.body;
 
     if(
        [product_id, title, description, category].some(field => typeof field !== "string" || field.trim() === "")
@@ -17,11 +17,13 @@ const createProduct = asyncHandler(async(req,res)=>{
     if(!price || isNaN(price) || price <=0){
         throw new ApiError(400,"Valid price is required")
     }
-    const existedProduct = await Product.findOne({product_id})
+    const existedProduct = await Product.findOne({product_id});
     if(existedProduct){
         throw new ApiError(400,"product with this Id already exist")
     }
-    const coverImagePath = req.files?.images?.[0]?.path;
+    
+    const coverImagePath = req.file?.path;
+    console.log("Uploaded file info:", req.file);
     if(!coverImagePath){
         throw new ApiError(400,"cover image is required")
     }
