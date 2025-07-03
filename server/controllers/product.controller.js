@@ -5,139 +5,146 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import mongoose from "mongoose";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
-const createProduct = asyncHandler(async(req,res)=>{
-    const {product_id,title,description,price,category,} = req.body;
+// ================= CREATE PRODUCT =================
+const createProduct = asyncHandler(async (req, res) => {
+  const { product_id, title, description, price, category } = req.body;
 
-    if(
-       [product_id, title, description, category].some(field => typeof field !== "string" || field.trim() === "")
+  // Validate fields
+  if (
+    [product_id, title, description, category].some(
+      (field) => typeof field !== "string" || field.trim() === ""
     )
-    {
-        throw new ApiError(400,"All fields are required")
-    }
-    if(!price || isNaN(price) || price <=0){
-        throw new ApiError(400,"Valid price is required")
-    }
-    const existedProduct = await Product.findOne({product_id});
-    if(existedProduct){
-        throw new ApiError(400,"product with this Id already exist")
-    }
-    
-    const coverImagePath = req.file?.path;
-    console.log("Uploaded file info:", req.file);
-    if(!coverImagePath){
-        throw new ApiError(400,"cover image is required")
-    }
-    const images = await uploadOnCloudinary(coverImagePath)
-    if(!images?.secure_url){
-        throw new ApiError(500,"cover image is required")
-    }
-    const product = await Product.create(
-        {
-            product_id,
-            title,
-            description,
-            images:{
-                url:image.secure_url,
-                public_id:image.public_id
-            },
-            price,
-            category
+  ) {
+    throw new ApiError(400, "All fields are required");
+  }
 
-        }
-    )
-    return res
+  if (!price || isNaN(price) || price <= 0) {
+    throw new ApiError(400, "Valid price is required");
+  }
+
+  // Check for duplicate product ID
+  const existedProduct = await Product.findOne({ product_id });
+  if (existedProduct) {
+    throw new ApiError(400, "Product with this ID already exists");
+  }
+
+  // Check if file was uploaded
+  const coverImagePath = req.file?.path;
+  if (!coverImagePath) {
+    throw new ApiError(400, "Cover image is required");
+  }
+
+  // Upload to Cloudinary
+  const image = await uploadOnCloudinary(coverImagePath);
+  if (!image?.secure_url) {
+    throw new ApiError(500, "Image upload failed");
+  }
+
+  // Create Product
+  const product = await Product.create({
+    product_id,
+    title,
+    description,
+    images: {
+      url: image.secure_url,
+      public_id: image.public_id,
+    },
+    price,
+    category,
+  });
+
+  return res
     .status(201)
-    .json(
-        new ApiResponse(201,product,"product created successfully")
-    )
+    .json(new ApiResponse(201, product, "Product created successfully"));
+});
 
-})
-const getProducts = asyncHandler(async(_,res)=>{
-    const products = await Product.find({}).lean();
-    return res
+// ================= GET ALL PRODUCTS =================
+const getProducts = asyncHandler(async (_, res) => {
+  const products = await Product.find({}).lean();
+  return res
     .status(200)
-    .json(
-         new ApiResponse(200,products,"All products fetched successfully")
-    )
-})
+    .json(new ApiResponse(200, products, "All products fetched successfully"));
+});
 
-const getproductbyId = asyncHandler(async(req,res)=>{
-    const {productId} = req.params
-    if(!mongoose.Types.ObjectId.isValid(productId)){
-        throw new ApiError(400,"invalid product id")
-    }
-    const product = await Product.findById(productId);
-    if(!product){
-        throw new ApiError(404,"product not found")
-    }
-    return res
+// ================= GET PRODUCT BY ID =================
+const getproductbyId = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    throw new ApiError(400, "Invalid product ID");
+ }
+
+  const product = await Product.findById(productId);
+  if (!product) {
+    throw new ApiError(404, "Product not found");
+  }
+
+  return res
     .status(200)
-    .json(
-        new ApiResponse(200,product,"product fetched successfully")
-    )
+    .json(new ApiResponse(200, product, "Product fetched successfully"));
+});
 
-})
+// ================= UPDATE PRODUCT =================
+const updateProducts = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+  const { title, description, price, category } = req.body;
 
-const updateProducts = asyncHandler(async(req,res)=>{
-    const{productId} = req.params
-    const{title,description,price,category} = req.body
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    throw new ApiError(400, "Invalid product ID");
+  }
 
-    if(!mongoose.Types.ObjectId.isValid(productId)){
-        throw new ApiError(400,"invalid product id")
-    }
-    
-    if(!price || isNaN(price) || price <=0){
-        throw new ApiError(400,"Valid price is required")
-    }
+  if (!price || isNaN(price) || price <= 0) {
+    throw new ApiError(400, "Valid price is required");
+  }
 
-    const updatedetails ={}
-     if(title) updatedetails.title = title.trim();
-     if(description) updatedetails.description = description.trim();
-     if(price) updatedetails.price = Number(price);
-     if(category) updatedetails.category = category.trim();
-     if (Object.keys(updatedetails).length === 0) {
+  const updateDetails = {};
+  if (title) updateDetails.title = title.trim();
+  if (description) updateDetails.description = description.trim();
+  if (price) updateDetails.price = Number(price);
+  if (category) updateDetails.category = category.trim();
+
+  if (Object.keys(updateDetails).length === 0) {
     throw new ApiError(400, "At least one field must be provided to update");
   }
 
-    const updateProduct = await Product.findByIdAndUpdate(
-        productId,
-        
-           {$set : updatedetails},
+  const updatedProduct = await Product.findByIdAndUpdate(
+    productId,
+    { $set: updateDetails },
+    { new: true }
+  );
 
-       
-        {new:true}
-    )
-    if(!updateProduct){
-        throw new ApiError(400 ,"Product could not be updated")
-    }
-    return res
+  if (!updatedProduct) {
+    throw new ApiError(400, "Product could not be updated");
+  }
+
+  return res
     .status(200)
-    .json(
-         new ApiResponse(200,updateProduct,"Product updated successfully")
-    )
+    .json(new ApiResponse(200, updatedProduct, "Product updated successfully"));
+});
 
-})
+// ================= DELETE PRODUCT =================
+const deleteProduct = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
 
-const deleteProduct = asyncHandler(async(req,res)=>{
-    const {productId} = req.params
-    if(!mongoose.Types.ObjectId.isValid(productId)){
-        throw new ApiError(400,"Invalid product id")
-    }
-   const deletedProduct = await Product.findByIdAndDelete(productId)
-   if(!deleteProduct){
-    throw new ApiError(404,"product not found")
-   }
-    return res
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    throw new ApiError(400, "Invalid product ID");
+  }
+
+  const deletedProduct = await Product.findByIdAndDelete(productId);
+  if (!deletedProduct) {
+    throw new ApiError(404, "Product not found");
+  }
+
+  return res
     .status(200)
-    .json(
-        new ApiResponse(200,deletedProduct,"The product deleted successfully")
-    )
-})
+    .json(new ApiResponse(200, deletedProduct, "Product deleted successfully"));
+});
 
+// ================= EXPORTS =================
 export {
-    createProduct,
-    getProducts,
-    getproductbyId,
-    updateProducts,
-    deleteProduct
-}
+  createProduct,
+  getProducts,
+  getproductbyId,
+  updateProducts,
+  deleteProduct,
+};

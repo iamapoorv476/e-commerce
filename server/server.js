@@ -8,6 +8,9 @@ import userRoutes from "./routes/user.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import dotenv from "dotenv";
 dotenv.config();
+console.log("Cloudinary Name:", process.env.CLOUDINARY_CLOUD_NAME);
+console.log("Cloudinary Key:", process.env.CLOUDINARY_API_KEY);
+console.log("Cloudinary Secret:", process.env.CLOUDINARY_API_SECRET ? "✓ Loaded" : "❌ Missing");
 
 const app = express();
 
@@ -20,6 +23,10 @@ app.use(express.json()); // to parse JSON body
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser());
+app.get('/',(req,res)=>{
+    res.json({msg:"This is Example"})
+})
+
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/products",productRoutes);
 // app.use("/api/v1/products", productRoutes); // optional
@@ -29,9 +36,6 @@ app.use((req, res) => {
   res.status(404).json({ success: false, message: "Route not found" });
 });
  // for parsing cookies
-app.get('/',(req,res)=>{
-    res.json({msg:"This is Example"})
-})
 
 
 const PORT = process.env.PORT || 5000;

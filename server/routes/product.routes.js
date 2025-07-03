@@ -11,10 +11,10 @@ import {
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/upload.middleware.js";
 const router = Router()
-router.use(verifyJWT);
 
-router.route("/create").post(upload.single("images"), createProduct);
+
+router.route("/create").post(upload.single("image"), createProduct);
 router.route("/products").get(getProducts)
-router.route("/products/:id").get(getproductbyId)
+router.route("/:id").get(getproductbyId)
 
 export default router;
