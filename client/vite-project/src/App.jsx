@@ -7,7 +7,11 @@ import Header from './components/header.jsx'
 import Shop from './Products/Shop.jsx'
 import Cart from './Cart/Cart.jsx';
 import ProductDetails from './Products/ProductDetails.jsx'; 
-
+import ContactUs from './payments/ContactUs.jsx';
+import PrivacyPolicy from './payments/PrivacyPolicy.jsx';
+import ShippingPolicy from './payments/ShippingPolicy.jsx';
+import TermsAndConditions from './payments/TermsAndConditions.jsx';
+import RefundPolicy from './payments/RefundPolicy.jsx';
 function App() {
   return (
     <>
@@ -19,6 +23,12 @@ function App() {
         <Route path ="/cart" element ={<Cart/>}/>
       
         <Route path="/product/:id" element={<ProductDetails />} />
+        <Route path="/refund-policy" element={<RefundPolicy />} />
+<Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+<Route path="/shipping-policy" element={<ShippingPolicy />} />
+<Route path="/privacy-policy" element={<PrivacyPolicy />} />
+<Route path="/contact" element={<ContactUs />} />
+
       </Routes>
     </>
   )
