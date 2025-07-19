@@ -1,0 +1,316 @@
+/* Header Styles */
+/* Header Styles */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: white;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 30px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Logo Styles */
+.logo {
+  flex: 1;
+}
+
+.logo h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  position: relative;
+}
+
+.logo h1 a {
+  background: linear-gradient(135deg, #14dcd9 0%, #ff6b6b 50%, #14bedc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-family: 'Arial Black', Arial, sans-serif;
+  text-shadow: 0 2px 4px rgba(220, 20, 60, 0.1);
+  position: relative;
+  display: inline-block;
+}
+
+.logo h1 a:hover {
+  transform: scale(1.05);
+  text-shadow: 0 4px 8px rgba(220, 20, 60, 0.2);
+  filter: brightness(1.1);
+}
+
+.logo h1 a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #dc143c 0%, #ff6b6b 50%, #dc143c 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+  border-radius: 4px;
+}
+
+.logo h1 a:hover::before {
+  opacity: 0.1;
+}
+
+/* Add sparkle effect */
+.logo h1 a::after {
+  content: '✨';
+  position: absolute;
+  top: -5px;
+  right: -15px;
+  font-size: 14px;
+  opacity: 0;
+  animation: sparkle 2s infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.5) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(180deg);
+  }
+}
+
+.logo h1 a:hover::after {
+  animation-duration: 1s;
+}
+
+/* Navigation Styles */
+nav {
+  display: flex;
+  align-items: center;
+}
+
+header ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+header ul li {
+  opacity: 0.7;
+  padding: 0 20px;
+  transition: opacity 0.3s ease;
+}
+
+header ul li:hover {
+  opacity: 1;
+}
+
+header a {
+  text-transform: uppercase;
+  color: black;
+  text-decoration: none;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: color 0.3s ease;
+}
+
+header a:hover {
+  color: crimson;
+}
+
+/* Menu Icon (Mobile) */
+.menu {
+  display: none;
+  cursor: pointer;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.menu:hover {
+  color: crimson;
+}
+
+/* Cart Icon */
+.cart-icon {
+  position: relative;
+  margin-left: 20px;
+  cursor: pointer;
+  padding: 5px;
+  transition: transform 0.2s ease;
+}
+
+.cart-icon:hover {
+  transform: scale(1.05);
+}
+
+.cart-icon span {
+  background: crimson;
+  border-radius: 20px;
+  color: white;
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  padding: 5px 7px;
+  font-size: 10px;
+  font-weight: 600;
+  min-width: 18px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(220, 20, 60, 0.3);
+  z-index: 1;
+}
+
+.cart-icon a {
+  color: #333;
+  display: flex;
+  align-items: center;
+  text-transform: none;
+}
+
+.cart-icon a:hover {
+  color: crimson;
+}
+
+/* Admin-specific styles */
+.logo h1 a[href="/"] {
+  color: #333;
+}
+
+/* Logout button styling */
+header ul li a[onClick] {
+  cursor: pointer;
+  color: crimson;
+  font-weight: 600;
+}
+
+header ul li a[onClick]:hover {
+  color: #dc143c;
+}
+
+/* Active link styling */
+header ul li a.active {
+  color: crimson;
+  opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-container {
+    padding: 10px 20px;
+  }
+  
+  header ul li {
+    padding: 0 15px;
+    font-size: 14px;
+  }
+  
+  .logo h1 {
+    font-size: 20px;
+  }
+  
+  .cart-icon {
+    margin-left: 15px;
+  }
+  
+  .menu {
+    display: block;
+    margin-left: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-container {
+    padding: 8px 15px;
+  }
+  
+  header ul li {
+    padding: 0 10px;
+    font-size: 12px;
+  }
+  
+  .logo h1 {
+    font-size: 18px;
+  }
+  
+  .cart-icon span {
+    padding: 3px 5px;
+    font-size: 8px;
+    top: -8px;
+    right: -8px;
+  }
+}
+
+/* Smooth transitions for better UX */
+header ul li,
+header a,
+.cart-icon,
+.menu {
+  transition: all 0.3s ease;
+}
+
+/* Focus states for accessibility */
+header a:focus,
+.cart-icon:focus,
+.menu:focus {
+  outline: 2px solid crimson;
+  outline-offset: 2px;
+}
+
+/* Loading state for cart */
+.cart-icon.loading {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Hide cart for admins - additional safety */
+.cart-icon.admin-hidden {
+  display: none;
+}
+
+/* Enhanced hover effects */
+header ul li:hover a {
+  transform: translateY(-1px);
+}
+
+/* Special styling for register/login links */
+header ul li a[href="/register"],
+header ul li a[href="/login"] {
+  color: #666;
+  font-weight: 500;
+}
+
+header ul li a[href="/register"]:hover,
+header ul li a[href="/login"]:hover {
+  color: crimson;
+}
+
+/* React Icons styling */
+.cart-icon svg,
+.menu svg {
+  vertical-align: middle;
+}

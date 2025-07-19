@@ -19,7 +19,7 @@ app.use(cors({
     credentials : true
 })
 )
-app.use(express.json()); // to parse JSON body
+app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser());
@@ -29,14 +29,12 @@ app.get('/',(req,res)=>{
 
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/products",productRoutes);
-// app.use("/api/v1/products", productRoutes); // optional
 
-// Handle 404
+
 app.use((req, res) => {
   res.status(404).json({ success: false, message: "Route not found" });
 });
- // for parsing cookies
-
+ 
 
 const PORT = process.env.PORT || 5000;
 

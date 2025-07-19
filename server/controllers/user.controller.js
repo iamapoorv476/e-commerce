@@ -1,5 +1,5 @@
 import { User } from "../models/user.model.js";
-
+import sendMail from "../utils/sendMail.js";
 import mongoose from "mongoose";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -36,11 +36,19 @@ const registerUser = asyncHandler(async (req,res)=>{
         throw new ApiError(400 ,"user already exist")
     }
 
+
     const user = await User.create({
         name:name.toLowerCase(),
         email,
         password
     })
+     const message = `
+    <h2>Welcome to 30DC Shop, ${name}!</h2>
+    <p>Thank you for registering. We’re excited to have you onboard. 🎉</p>
+    <p>Feel free to browse and shop!</p>
+  `;
+  await sendMail("Welcome to 30DC Shop",email,message);
+
 
     const createdUser = await User.findById(user._id).select(
         "-password "

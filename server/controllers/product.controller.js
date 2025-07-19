@@ -5,11 +5,11 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import mongoose from "mongoose";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
-// ================= CREATE PRODUCT =================
+
 const createProduct = asyncHandler(async (req, res) => {
   const { product_id, title, description, price, category } = req.body;
 
-  // Validate fields
+  
   if (
     [product_id, title, description, category].some(
       (field) => typeof field !== "string" || field.trim() === ""
@@ -68,20 +68,36 @@ const getProducts = asyncHandler(async (_, res) => {
 
 // ================= GET PRODUCT BY ID =================
 const getproductbyId = asyncHandler(async (req, res) => {
-  const { productId } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(productId)) {
+  const { id } = req.params;
+  
+  // Add debugging logs
+  console.log('Received product ID:', id);
+  console.log('Route params:', req.params);
+  console.log('Full request URL:', req.originalUrl);
+  
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    console.log('Invalid ObjectId:', id);
     throw new ApiError(400, "Invalid product ID");
- }
-
-  const product = await Product.findById(productId);
+  }
+  
+  console.log('Searching for product with ID:', id);
+  const product = await Product.findById(id);
+  
+  console.log('Product found:', product);
+  console.log('Product type:', typeof product);
+  console.log('Is product an array?', Array.isArray(product));
+  
   if (!product) {
+    console.log('Product not found for ID:', id);
     throw new ApiError(404, "Product not found");
   }
-
+  
+  console.log('Sending response with product:', product);
+  
+  // FIXED: Correct parameter order - (statusCode, message, data)
   return res
     .status(200)
-    .json(new ApiResponse(200, product, "Product fetched successfully"));
+    .json(new ApiResponse(200, "Product fetched successfully", product));
 });
 
 // ================= UPDATE PRODUCT =================
