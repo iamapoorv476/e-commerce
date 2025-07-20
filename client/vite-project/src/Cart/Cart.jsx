@@ -1,11 +1,15 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom'; // ✅ Make sure this is imported
 import { removeFromCart, clearCart } from '../redux/cartSlice';
+import loadRazorpay from '../utils/payments'; // ✅ Default import
+import axios from 'axios';
 import './Cart.css';
 import { Link } from 'react-router-dom';
 
 const Cart = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // ✅ Initialize navigate
   const cartItems = useSelector(state => state.cart.cartItems);
   const totalItems = useSelector(state => state.cart.totalItems);
   const totalPrice = useSelector(state => state.cart.totalPrice);
@@ -13,6 +17,20 @@ const Cart = () => {
   if (cartItems.length === 0) {
     return <h2 style={{ textAlign: "center", fontSize: "2rem" }}>Your cart is empty</h2>;
   }
+
+  const handleCheckout = async () => {
+    try {
+      const { data } = await axios.post("/api/payment/create-order", {
+        amount: totalPrice,
+      });
+
+      // ✅ Make sure to pass navigate as the second parameter
+      loadRazorpay(data.order, navigate);
+    } catch (error) {
+      console.error("Payment initiation failed:", error);
+      alert("Payment failed. Please try again.");
+    }
+  };
 
   return (
     <div className="cart-container">
@@ -33,6 +51,7 @@ const Cart = () => {
         <p>Total Price: ₹{totalPrice}</p>
         <button onClick={() => dispatch(clearCart())}>Clear Cart</button>
         <Link to="/checkout"><button>Proceed to Checkout</button></Link>
+        <button onClick={handleCheckout}>Pay now</button>
       </div>
     </div>
   );

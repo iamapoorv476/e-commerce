@@ -6,6 +6,7 @@ import cors from "cors";
 // ✅ Correct
 import userRoutes from "./routes/user.routes.js";
 import productRoutes from "./routes/product.routes.js";
+import paymentRoutes from "./routes/payment.routes.js";
 import dotenv from "dotenv";
 dotenv.config();
 console.log("Cloudinary Name:", process.env.CLOUDINARY_CLOUD_NAME);
@@ -29,6 +30,7 @@ app.get('/',(req,res)=>{
 
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/products",productRoutes);
+app.use("/api/payment", paymentRoutes);
 
 
 app.use((req, res) => {
