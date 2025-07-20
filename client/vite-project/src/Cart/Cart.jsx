@@ -1,15 +1,15 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom'; // ✅ Make sure this is imported
+import { useNavigate } from 'react-router-dom'; 
 import { removeFromCart, clearCart } from '../redux/cartSlice';
-import loadRazorpay from '../utils/payments'; // ✅ Default import
+import loadRazorpay from '../utils/payments'; 
 import axios from 'axios';
 import './Cart.css';
 import { Link } from 'react-router-dom';
 
 const Cart = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // ✅ Initialize navigate
+  const navigate = useNavigate(); 
   const cartItems = useSelector(state => state.cart.cartItems);
   const totalItems = useSelector(state => state.cart.totalItems);
   const totalPrice = useSelector(state => state.cart.totalPrice);
@@ -24,7 +24,7 @@ const Cart = () => {
         amount: totalPrice,
       });
 
-      // ✅ Make sure to pass navigate as the second parameter
+      
       loadRazorpay(data.order, navigate);
     } catch (error) {
       console.error("Payment initiation failed:", error);
